@@ -9,23 +9,12 @@ class HomeScreen extends StatelessWidget {
   final String title;
   const HomeScreen({super.key, required this.title});
 
-  Future<void> _openDetail(BuildContext context, {Todo? todo}) async {
-    final cubit = context.read<TodoCubit>();
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => TaskDetailScreen(todo: todo)),
-    );
-
-    if (result == null) return;
-
-    if (result == 'delete') {
-      cubit.deleteTodo(todo!.id);
-    } else if (result is Todo) {
-      final exists = cubit.state.any((t) => t.id == result.id);
-      exists ? cubit.updateTodo(result) : cubit.addTodo(result);
-    }
-  }
-
+Future<void> _openDetail(BuildContext context, {Todo? todo}) async {
+  await Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => TaskDetailScreen(todo: todo)),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

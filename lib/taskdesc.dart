@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'todo.dart';
+import 'cubit/todo_cubit.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final Todo? todo;
@@ -47,7 +49,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   void _save() {
     if (_titleController.text.trim().isEmpty) return;
 
-    final resultTodo = Todo(
+    final cubit = context.read<TodoCubit>();
+    final newTodo = Todo(
       id: widget.todo?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       title: _titleController.text.trim(),
       isDone: widget.todo?.isDone ?? false,
@@ -55,11 +58,18 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       notes: _notesController.text.trim(),
     );
 
-    Navigator.pop(context, resultTodo);
+    if (isEditing) {
+      cubit.updateTodo(newTodo);
+    } else {
+      cubit.addTodo(newTodo);
+    }
+
+    Navigator.pop(context);
   }
 
   void _delete() {
-    Navigator.pop(context, 'delete');
+    context.read<TodoCubit>().deleteTodo(widget.todo!.id);
+    Navigator.pop(context);
   }
 
   @override
